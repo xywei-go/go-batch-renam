@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -30,7 +31,7 @@ func main() {
 	}
 	fmt.Printf("input path is: %s\n", pathInput)
 	var replaceWord string
-	fmt.Println("please input the word to be replaced name: ")
+	fmt.Println("please input the word to be deleted name: ")
 	fmt.Scanln(&replaceWord)
 	fmt.Println("you input desName: ", replaceWord)
 	targetFile, err := os.Stat(pathInput)
@@ -48,6 +49,20 @@ func main() {
 	if targetFile.IsDir() && strings.EqualFold(optType, "D") {
 		// 遍历目录
 		// renameFile(pathInput, replaceWord)
+		fis, err2 := ioutil.ReadDir(pathInput)
+		if err2 != nil {
+			fmt.Println(fis)
+			return
+		}
+		for _, v := range fis {
+			absPath := pathInput + string(os.PathSeparator) + v.Name()
+			fi, _ := os.Stat(absPath)
+			if !fi.IsDir() {
+				fmt.Printf("v: %v\n", absPath)
+				renameFile(absPath, replaceWord)
+			}
+
+		}
 		fmt.Println("Done!")
 		return
 	}
